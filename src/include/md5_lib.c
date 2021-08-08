@@ -148,7 +148,7 @@ void __md5_prepare_msg(const char *src, const size_t length, char **dst,
 
 	size_t newLength = length + 1; // 1 Additional byte (0x80)
 	uint8_t restModulo = newLength & 0x3F; // Canceling everything but last 6 bits
-	int8_t diff;
+	int8_t diff = 0;
 
 	if (restModulo != MD5_MANDATORY_CONGRUENT) {
 		diff = MD5_MANDATORY_CONGRUENT - restModulo;
