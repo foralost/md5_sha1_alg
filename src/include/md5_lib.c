@@ -33,7 +33,8 @@ uint32_t __md5_sin_table[MD5_SIN_TABLE_SIZE] = { 0 };
 // ---------- STUBS -----------
 void __md5_update_sinus_table(void);
 
-void __md5_prepare_msg(const char *src, const size_t length, char **dst, size_t* new_length);
+void __md5_prepare_msg(const char *src, const size_t length, char **dst,
+		size_t *new_length);
 
 uint32_t __md5_rotate_left(const uint32_t val, const uint8_t n);
 
@@ -41,9 +42,8 @@ void __md5_process_block(const char *block, struct md5_context *current_context)
 
 // -------------- CODE SECTION --------------------
 
-uint32_t __md5_rotate_left(const uint32_t val, const uint8_t n)
-{
-	return ( ( val << n ) | ( val >> ( sizeof(val)*8 - n ) ) );
+uint32_t __md5_rotate_left(const uint32_t val, const uint8_t n) {
+	return ((val << n) | (val >> (sizeof(val) * 8 - n)));
 }
 void __md5_process_block(const char *block, struct md5_context *ctx) {
 
@@ -56,12 +56,12 @@ void __md5_process_block(const char *block, struct md5_context *ctx) {
 		switch (i >> MD5_ROUND_COUNT) {
 
 		case 0:
-			f_val = (ctx->B & ctx->C) | ( (~ctx->B) & ctx->D);
+			f_val = (ctx->B & ctx->C) | ((~ctx->B) & ctx->D);
 			offset = i;
 			break;
 
 		case 1:
-			f_val = (ctx->D & ctx->B) | ( (~ctx->D) & ctx->C );
+			f_val = (ctx->D & ctx->B) | ((~ctx->D) & ctx->C);
 			offset = (5 * i + 1) & 0x0F;
 			break;
 		case 2:
@@ -85,12 +85,12 @@ void __md5_process_block(const char *block, struct md5_context *ctx) {
 		ctx->C = ctx->B;
 
 		ctx->B += __md5_rotate_left(f_val,
-				__md5_rotation_constants[i >> 4][i
-						& 3]);
+				__md5_rotation_constants[i >> 4][i & 3]);
 	}
 }
 
-void md5_digest(const char *source, const size_t length, struct md5_context *destination) {
+void md5_digest(const char *source, const size_t length,
+		struct md5_context *destination) {
 
 	if (!__md5_sin_table[0])
 		__md5_update_sinus_table();
@@ -133,7 +133,8 @@ void __md5_update_sinus_table() {
 	}
 }
 
-void __md5_prepare_msg(const char *src, const size_t length, char **dst, size_t* new_length) {
+void __md5_prepare_msg(const char *src, const size_t length, char **dst,
+		size_t *new_length) {
 	/*
 	 * Extra bytes for sure:
 	 *	1 byte for 0x80
@@ -167,30 +168,28 @@ void __md5_prepare_msg(const char *src, const size_t length, char **dst, size_t*
 	}
 
 	size_t bitsLength = length << 3;
-	char* lengthCnvrt = (char*) &bitsLength;
+	char *lengthCnvrt = (char*) &bitsLength;
 
-	for(uint8_t i = 0 ; i < sizeof(bitsLength); i++){
+	for (uint8_t i = 0; i < sizeof(bitsLength); i++) {
 		(*dst)[newLength - sizeof(bitsLength) + i] = lengthCnvrt[i];
 	}
 
 	*new_length = newLength;
 }
 
-void __md5_uint32_to_char( char* dest, uint32_t val)
-{
+void __md5_uint32_to_char(char *dest, uint32_t val) {
 
-	dest[0] = (uint8_t) ( val ) ;
-	dest[1] = (uint8_t) ( val >> 8 );
-	dest[2] = (uint8_t) ( val >> 16 );
-	dest[3] = (uint8_t) ( val >> 24 ) ;
+	dest[0] = (uint8_t) (val);
+	dest[1] = (uint8_t) (val >> 8);
+	dest[2] = (uint8_t) (val >> 16);
+	dest[3] = (uint8_t) (val >> 24);
 
 }
-void md5_convert_char(char* dest, const struct md5_context* src)
-{
+void md5_convert_char(char *dest, const struct md5_context *src) {
 
-	__md5_uint32_to_char( dest, src->A);
-	__md5_uint32_to_char( dest + 4, src->B);
-	__md5_uint32_to_char( dest + 8, src->C);
-	__md5_uint32_to_char( dest + 12, src->D);
+	__md5_uint32_to_char(dest, src->A);
+	__md5_uint32_to_char(dest + 4, src->B);
+	__md5_uint32_to_char(dest + 8, src->C);
+	__md5_uint32_to_char(dest + 12, src->D);
 
 }
