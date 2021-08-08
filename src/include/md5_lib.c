@@ -22,13 +22,13 @@
 #define 	MD5_ROUND_SIZE				16
 #define 	MD5_ROUND_COUNT				4
 
-const char __MD5_rotation_constants[4][4] = { { 7, 12, 17, 22 },
+const char __md5_rotation_constants[4][4] = { { 7, 12, 17, 22 },
 		{ 5, 9, 14, 20 }, { 4, 11, 16, 23 }, { 6, 10, 15, 21 } };
 
-const char __MD5_round_table[4][4] = { { 7, 12, 17, 22 }, { 5, 9, 14, 20 }, { 4,
+const char __md5_round_table[4][4] = { { 7, 12, 17, 22 }, { 5, 9, 14, 20 }, { 4,
 		11, 16, 23 }, { 6, 10, 15, 21 } };
 
-uint32_t __MD5_sin_table[MD5_SIN_TABLE_SIZE] = { 0 };
+uint32_t __md5_sin_table[MD5_SIN_TABLE_SIZE] = { 0 };
 
 // ---------- STUBS -----------
 void __md5_update_sinus_table(void);
@@ -78,22 +78,22 @@ void __md5_process_block(const char *block, struct md5_context *ctx) {
 			f_val = 0;
 		}
 
-		f_val += ctx->A + __MD5_sin_table[i] + work_cnvrt[offset];
+		f_val += ctx->A + __md5_sin_table[i] + work_cnvrt[offset];
 
 		ctx->A = ctx->D;
 		ctx->D = ctx->C;
 		ctx->C = ctx->B;
 
-		ctx->B += __MD5_rotate_left(f_val,
-				__MD5_rotation_constants[i >> 4][i
+		ctx->B += __md5_rotate_left(f_val,
+				__md5_rotation_constants[i >> 4][i
 						& 3]);
 	}
 }
 
 void md5_digest(const char *source, const size_t length, struct md5_context *destination) {
 
-	if (!__MD5_sin_table[0])
-		__MD5_update_sinus_table();
+	if (!__md5_sin_table[0])
+		__md5_update_sinus_table();
 
 	struct md5_context start_context;
 	struct md5_context block_context;
@@ -106,14 +106,14 @@ void md5_digest(const char *source, const size_t length, struct md5_context *des
 	char *szWorkArea;
 	size_t new_length;
 
-	__MD5_prepare_msg(source, length, &szWorkArea, &new_length);
+	__md5_prepare_msg(source, length, &szWorkArea, &new_length);
 
 	const size_t count_blocks = new_length >> 6; // Count of 512 blocks...
 
 	for (size_t i = 0; i < count_blocks; i++) {
 		block_context = start_context;
 
-		__MD5_process_block(szWorkArea + i * MD5_BLOCK_SIZE, &block_context);
+		__md5_process_block(szWorkArea + i * MD5_BLOCK_SIZE, &block_context);
 
 		start_context.A += block_context.A;
 		start_context.B += block_context.B;
@@ -121,17 +121,15 @@ void md5_digest(const char *source, const size_t length, struct md5_context *des
 		start_context.D += block_context.D;
 	}
 
-	destination->A = start_context.A;
-	destination->B = start_context.B;
-	destination->C = start_context.C;
-	destination->D = start_context.D;
+	*destination = start_context;
+	free(szWorkArea);
 }
 
 void __md5_update_sinus_table() {
 	for (int i = 0; i < MD5_SIN_TABLE_SIZE; i++) {
 		const double sin_val = fabs(sin(i + 1));
 		const uint64_t maxVal = (uint64_t) UINT32_MAX + (uint64_t) 1;
-		__MD5_sin_table[i] = floor((double) maxVal * sin_val);
+		__md5_sin_table[i] = floor((double) maxVal * sin_val);
 	}
 }
 
@@ -141,7 +139,7 @@ void __md5_prepare_msg(const char *src, const size_t length, char **dst, size_t*
 	 *	1 byte for 0x80
 	 *	x bytes to be congruent to 448 mod 512 (bits = 64 bytes)
 	 *	8 bytes for original length
-	 *		finally: 1 + x
+	 *		finally: 1 + x + 8
 	 *
 	 *	Cheat table: 448 bits = 56 bytes
 	 *				 512 bits = 64 bytes = 2^6 bytes
@@ -190,9 +188,9 @@ void __md5_uint32_to_char( char* dest, uint32_t val)
 void md5_convert_char(char* dest, const struct md5_context* src)
 {
 
-	__MD5_uint32_to_char( dest, src->A);
-	__MD5_uint32_to_char( dest + 4, src->B);
-	__MD5_uint32_to_char( dest + 8, src->C);
-	__MD5_uint32_to_char( dest + 12, src->D);
+	__md5_uint32_to_char( dest, src->A);
+	__md5_uint32_to_char( dest + 4, src->B);
+	__md5_uint32_to_char( dest + 8, src->C);
+	__md5_uint32_to_char( dest + 12, src->D);
 
 }
