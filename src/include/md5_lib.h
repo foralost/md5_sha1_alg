@@ -13,7 +13,6 @@
 #include <stddef.h>
 #include <stdint.h>
 #include <math.h>
-#include <stdio.h>
 
 struct md5_context {
 	uint32_t A;

@@ -8,7 +8,7 @@
 #include "md5_lib.h"
 
 #define 	MD5_SIN_TABLE_SIZE 			64
-#define 	MD5_HASH_LENGTH 			512
+#define 	MD5_HASH_LENGTH 			128
 #define 	MD5_MANDATORY_CONGRUENT		56
 #define 	MD5_MODULO					64
 #define		MD5_APPEND_BYTE				0x80
@@ -119,6 +119,7 @@ void md5_digest(const char *source, const size_t length,
 		start_context.B += block_context.B;
 		start_context.C += block_context.C;
 		start_context.D += block_context.D;
+
 	}
 
 	*destination = start_context;

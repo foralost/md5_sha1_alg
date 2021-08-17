@@ -4,21 +4,24 @@
  *  Created on: 8 sie 2021
  *      Author: foralost
  */
-#include "include/md5_lib.h"
+#include <stdio.h>
 
+#include "include/md5_lib.h"
+#include "include/sha256_lib.h"
 
 int main(int argc, char** argv, char** envp)
 {
-	char example[] = "test123";
-	size_t length = 7;
+	char example[] = "abc";
+	size_t length = 3;
 
-	struct md5_context dest;
-	md5_digest(example, length, &dest);
+	struct sha256_context dest;
+	sha256_digest(example, length, &dest);
 
-	char out[16];
+	char out[32];
 
-	md5_convert_char(out, &dest);
-	for( int i = 0 ; i< 16; i++){
+	sha256_convert_char(out, &dest);
+	printf("SHA256 \n");
+	for( int i = 0 ; i< 32; i++){
 		printf("%hhX", out[i]);
 	}
 
