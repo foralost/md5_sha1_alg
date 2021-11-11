@@ -18,7 +18,7 @@
 #define 	MD5_START_VAL_C				0x98badcfe
 #define 	MD5_START_VAL_D				0x10325476
 
-#define 	MD5_BLOCK_SIZE				512
+#define 	MD5_BLOCK_SIZE				64
 #define 	MD5_ROUND_SIZE				16
 #define 	MD5_ROUND_COUNT				4
 
@@ -98,19 +98,20 @@ void md5_digest(const char *source, const size_t length,
 	struct md5_context start_context;
 	struct md5_context block_context;
 
-	start_context.A = MD5_START_VAL_A;
-	start_context.B = MD5_START_VAL_B;
-	start_context.C = MD5_START_VAL_C;
-	start_context.D = MD5_START_VAL_D;
 
 	char *szWorkArea;
 	size_t new_length;
 
 	__md5_prepare_msg(source, length, &szWorkArea, &new_length);
 
-	const size_t count_blocks = new_length >> 6; // Count of 512 blocks...
+	const size_t count_blocks = new_length >> 6; // Count of 512 bits blocks...
+	start_context.A = MD5_START_VAL_A;
+	start_context.B = MD5_START_VAL_B;
+	start_context.C = MD5_START_VAL_C;
+	start_context.D = MD5_START_VAL_D;
 
 	for (size_t i = 0; i < count_blocks; i++) {
+
 		block_context = start_context;
 
 		__md5_process_block(szWorkArea + i * MD5_BLOCK_SIZE, &block_context);
@@ -125,7 +126,12 @@ void md5_digest(const char *source, const size_t length,
 	*destination = start_context;
 	free(szWorkArea);
 }
-
+uint8_t md5_compare( const struct md5_context* first, const struct md5_context* sec){
+	if(first->A == sec->A && first->B == sec->B && first->C == sec->C && first->D == sec->D)
+		return 1;
+	else
+		return 0;
+}
 void __md5_update_sinus_table() {
 	for (int i = 0; i < MD5_SIN_TABLE_SIZE; i++) {
 		const double sin_val = fabs(sin(i + 1));

@@ -26,5 +26,5 @@ void md5_digest(const char *source, size_t length,
 
 void md5_convert_char(char* dest, const struct md5_context* src);
 
-
+uint8_t md5_compare(const struct md5_context* first, const struct md5_context* sec);
 #endif /* INCLUDE_MD5_LIB_H_ */
